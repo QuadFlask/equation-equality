@@ -1,7 +1,7 @@
 package com.flask;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Set;
@@ -80,15 +80,64 @@ public class EquationTest {
 		System.out.println(opWrapSet1.toString());
 	}
 
-	@Test
-	public void opwrapset_build_test() {
-		String equation = "a+b";
-		OpWrapSet opWrapSet = OpWrapSetBuilder.build(equation);
+	// @Test
+	// public void opwrapset_build_test() {
+	// String equation = "a+b";
+	// OpWrapSet opWrapSet = OpWrapSetBuilder.build(equation);
+	//
+	// OpWrapSet opWrapSet1 = new OpWrapSet("+", "a", "b");
+	// assertEquals(opWrapSet, opWrapSet1);
+	// }
 
-		OpWrapSet opWrapSet1 = new OpWrapSet("+", "a", "b");
+	@Test
+	public void buildTest_plus() {
+		OpWrapSet opWrapSet = build("a+b+c");
+		OpWrapSet opWrapSet1 = new OpWrapSet("+", "a", "c", "b");
 		assertEquals(opWrapSet, opWrapSet1);
 	}
 
+	@Test
+	public void buildTest_multiply() {
+		OpWrapSet opWrapSet = build("a*b*c");
+		OpWrapSet opWrapSet1 = new OpWrapSet("*", "a", "c", "b");
+		assertEquals(opWrapSet, opWrapSet1);
+	}
+
+	@Test
+	public void buildTest_complicated() {
+		OpWrapSet opWrapSet = build("a+b*c");
+		OpWrapSet opWrapSet1 = new OpWrapSet("+");
+		opWrapSet1.put("a");
+		opWrapSet1.put(new OpWrapSet("*", "c", "b"));
+		assertEquals(opWrapSet1, opWrapSet);
+	}
+
+	private OpWrapSet build(String e) {
+		Character operator = null;
+		Set<OpWrap> operends = Sets.newConcurrentHashSet();
+
+		for (int i = 0; i < e.length(); i++) {
+			Character c = e.charAt(i);
+			if (operators.contains(c)) {
+				if (operator != null && operator != c) {
+					
+				}
+				operator = c;
+			} else {
+				operends.add(new OpWrap(c.toString()));
+			}
+		}
+
+		return new OpWrapSet(operator.toString(), operends);
+	}
+
+	private static final Set<Character> operators = Sets.newConcurrentHashSet();
+	static {
+		operators.add('+');
+		operators.add('-');
+		operators.add('*');
+		operators.add('/');
+	}
 }
 
 class OpWrapSetBuilder {
@@ -110,7 +159,7 @@ class OpWrapSetBuilder {
 			} else {
 				operends.add(c);
 				if (operator != '?') {
-					
+
 				}
 			}
 		}

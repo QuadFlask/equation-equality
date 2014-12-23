@@ -1,6 +1,7 @@
 package com.flask;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -34,6 +35,17 @@ public class OpWrapSet extends OpWrap {
 		operendSet.addAll(Arrays.asList(opWrapSets));
 	}
 
+	public OpWrapSet(String operator) {
+		this.operator = operator;
+	}
+
+	public OpWrapSet(String operator, Set<OpWrap> operends) {
+		this(operator);
+		Iterator<OpWrap> iterator = operends.iterator();
+		while (iterator.hasNext())
+			put(iterator.next().toString());
+	}
+
 	public OpWrapSet put(OpWrapSet opWrapSet) {
 		operendSet.add(opWrapSet);
 		return this;
@@ -41,6 +53,11 @@ public class OpWrapSet extends OpWrap {
 
 	public OpWrapSet put(String operend) {
 		operendSet.add(new OpWrap(operend));
+		return this;
+	}
+
+	public OpWrapSet put(OpWrap operend) {
+		operendSet.add(operend);
 		return this;
 	}
 
